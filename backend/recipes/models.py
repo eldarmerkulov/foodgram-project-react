@@ -1,26 +1,47 @@
 from django.db import models
 
-from users import User
-from .constant import (LENGTH_EMAIL, LENGTH_NAME,
-                       LENGTH_NAME_USER, LENGTH_SLUG,
-                       MAX_SCORE, MIN_SCORE)
+# Локальный импорт:
+import sys
+from os import path
+__path__ = path.dirname(path.abspath(__file__))
+__parent__ = path.abspath(path.join(__path__, ".."))
+# Добавляем в sys-path именно parent, чтобы не слетала настройка в PyCharm
+sys.path.append(__parent__)
+
+from users.models import User
+from core.constant import (
+    BLUE,
+    GREEN,
+    LENGTH_INGREDIENT_NAME,
+    LENGTH_INGREDIENT_UNIT,
+    LENGTH_RECIPE_NAME,
+    LENGTH_TAG_COLOR,
+    LENGTH_TAG_NAME,
+    LENGTH_TAG_SLUG,
+    PURPLE
+)
+
+COLOR_CHOICES = (
+        (BLUE, 'Синий'),
+        (GREEN, 'Зеленый'),
+        (PURPLE, 'Фиолетовый'),
+)
 
 
 class Tag(models.Model):
     name = models.CharField(
         verbose_name='Наименование',
-        max_length=LENGTH_NAME, #200
+        max_length=LENGTH_TAG_NAME,
         unique=True,
     )
     color = models.CharField(
         verbose_name='Цвет',
-        max_length=LENGTH_NAME, #7
-        unique=True,
-        # Добавить проверку на регулярку ^[-a-zA-Z0-9_]+$
+        max_length=LENGTH_TAG_COLOR,
+        choices=COLOR_CHOICES,
     )
     slug = models.SlugField(
         verbose_name='Slug',
-        max_length=LENGTH_SLUG, #200
+        max_length=LENGTH_TAG_SLUG,
         unique=True,
         )
 
@@ -36,13 +57,11 @@ class Tag(models.Model):
 class Ingredient(models.Model):
     name = models.CharField(
         verbose_name='Наименование',
-        max_length=LENGTH_NAME, #200
-        required=True,
+        max_length=LENGTH_INGREDIENT_NAME,
     )
     measurement_unit = models.CharField(
         verbose_name='Единица измерения',
-        max_length=LENGTH_NAME, #200
-        required=True,
+        max_length=LENGTH_INGREDIENT_UNIT,
     )
 
     class Meta:
@@ -74,7 +93,6 @@ class Recipe(models.Model):
         to=User,
         related_name='recipes',
         on_delete=models.CASCADE,
-        required=True,
     )
     ingredients = models.ManyToManyField(
         verbose_name='Ингридиенты',
@@ -84,21 +102,18 @@ class Recipe(models.Model):
     )
     name = models.CharField(
         verbose_name='Наименование',
-        max_length=LENGTH_NAME, #200
-        required=True,
+        max_length=LENGTH_RECIPE_NAME,
     )
     image = models.ImageField(
         verbose_name='Изображение',
-        upload_to='recipes/',
-        required=True,
+        upload_to='recipes/images/',
     )
     text = models.TextField(
         verbose_name='Описание',
-        required=True,
     )
     cooking_time = models.PositiveSmallIntegerField(
         verbose_name='Время приготовления',
-        default=0,
+        default=1,
         # валидатор времени
     )
     pub_date = models.DateTimeField(
@@ -151,19 +166,19 @@ class ShoppingCart(models.Model):
     user = models.ForeignKey(
         verbose_name='Пользователь',
         to=User,
-        related_name='favorites',
+        related_name='shoppingcarts',
         on_delete=models.CASCADE,
     )
     recipe = models.ForeignKey(
         verbose_name='Избранные рецепты',
         to=Recipe,
-        related_name='in_favorites',
+        related_name='in_shoppingcarts',
         on_delete=models.CASCADE,
     )
 
     class Meta:
-        verbose_name = 'Избранный рецепт'
-        verbose_name_plural = 'Избранные рецепты'
+        verbose_name = 'Список покупок'
+        verbose_name_plural = 'Списки покупок'
         constraints = (
             models.UniqueConstraint(
                 fields=(
@@ -211,7 +226,7 @@ class IngredientAmount(models.Model):
             models.UniqueConstraint(
                 fields=(
                     'recipe',
-                    'ingredients',
+                    'ingredient',
                 ),
                 name='ingredient already added.',
             ),

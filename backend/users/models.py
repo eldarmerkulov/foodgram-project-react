@@ -1,9 +1,24 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from ..recipes.constant import (ADMIN, LENGTH_EMAIL, LENGTH_NAME,
-                                LENGTH_NAME_USER, LENGTH_SLUG, MAX_SCORE,
-                                MIN_SCORE, USER)
+# Локальный импорт:
+import sys
+from os import path
+__path__ = path.dirname(path.abspath(__file__))
+__parent__ = path.abspath(path.join(__path__, ".."))
+# Добавляем в sys-path именно parent, чтобы не слетала настройка в PyCharm
+sys.path.append(__parent__)
+from core.constant import (
+    ADMIN,
+    LENGTH_EMAIL,
+    LENGTH_USER_NAME,
+    LENGTH_USER_PASS,
+    MAX_SCORE,
+    MIN_SCORE,
+    USER
+)
+from core.validators import validate_username
+
 
 ROLE_CHOICES = (
     (USER, 'Пользователь'),
@@ -14,8 +29,8 @@ ROLE_CHOICES = (
 class User(AbstractUser):
     username = models.CharField(
         verbose_name='Имя пользователя',
-        max_length=LENGTH_NAME_USER,
-        # validators=[validate_username],
+        max_length=LENGTH_USER_NAME,
+        validators=[validate_username],
         unique=True
     )
     email = models.EmailField(
@@ -25,17 +40,21 @@ class User(AbstractUser):
     )
     first_name = models.CharField(
         verbose_name='Имя',
-        max_length=LENGTH_NAME_USER,
+        max_length=LENGTH_USER_NAME,
     )
     last_name = models.CharField(
         verbose_name='Фамилия',
-        max_length=LENGTH_NAME_USER,
+        max_length=LENGTH_USER_NAME,
     )
     role = models.CharField(
         'Полномочия',
         max_length=max(len(role_name) for role_name, _ in ROLE_CHOICES),
         choices=ROLE_CHOICES,
         default=USER
+    )
+    password = models.CharField(
+        verbose_name='Пароль',
+        max_length=LENGTH_USER_PASS,
     )
 
     class Meta(AbstractUser.Meta):
@@ -57,16 +76,14 @@ class Subscribe(models.Model):
     user = models.ForeignKey(
         verbose_name='Подписчик',
         to=User,
-        related_name='users',
+        related_name='authors',
         on_delete=models.CASCADE,
-        required=True,
     )
     author = models.ForeignKey(
         verbose_name='Автор',
         to=User,
-        related_name='users',
+        related_name='subscribers',
         on_delete=models.CASCADE,
-        required=True,
     )
 
     class Meta:
