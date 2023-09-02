@@ -128,6 +128,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     ingredients = serializers.SerializerMethodField()
     is_favorite = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
+    cooking_time = serializers.IntegerField()
 
     class Meta:
         model = Recipe
@@ -155,6 +156,8 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         ingredients = self.initial_data.get('ingredients')
+        tags = self.initial_data.get('tags')
+        cooking_time = self.initial_data.get('cooking_time')
         if not ingredients:
             raise serializers.ValidationError({
                 'ingredients': 'Должен быть хотя бы один ингредиент'
@@ -174,26 +177,39 @@ class RecipeSerializer(serializers.ModelSerializer):
                     'ingredients': 'Количество должно быть больше 0'
                 })
             ingredients_check.append(ingredient)
+        for tag in tags:
+            if not Tag.objects.filter(id=tag).exists():
+                raise serializers.ValidationError(
+                    'Указанного тега не существует'
+                )
+        if cooking_time < 1:
+            raise serializers.ValidationError(
+                'Время готовки должно быть не меньше одной минуты')
         data['ingredients'] = ingredients
+        data['tags'] = tags
+        data['cooking_time'] = cooking_time
         return data
 
-    def ingredients_in_recipe(self, recipe, ingredients):
+    @staticmethod
+    def create_recipe_ingredients(recipe, ingredients):
         ingredients_in_recipe = []
 
-        for ingredient, amount in ingredients.values():
+        for ingredient in ingredients:
             ingredients_in_recipe.append(
                 IngredientAmount(
-                    recipe=recipe, ingredients=ingredient, amount=amount
+                    recipe=recipe,
+                    ingredient_id=ingredient.get('id'),
+                    amount=ingredient.get('amount')
                 )
             )
         IngredientAmount.objects.bulk_create(ingredients_in_recipe)
 
     def create(self, validated_data):
         ingredients = validated_data.pop('ingredients')
-        tags = self.validated_data.pop('tags')
+        tags = validated_data.pop('tags')
         recipe = Recipe.objects.create(**validated_data)
         recipe.tags.set(tags)
-        self.ingredients_in_recipe(recipe, ingredients)
+        self.create_recipe_ingredients(recipe, ingredients)
         return recipe
 
     def update(self, recipe, validated_data):
@@ -207,6 +223,6 @@ class RecipeSerializer(serializers.ModelSerializer):
             recipe.tags.set(tags)
         if ingredients:
             recipe.ingredients.clear()
-            self.ingredients_in_recipe(recipe, ingredients)
+            self.create_recipe_ingredients(recipe, ingredients)
         recipe.save()
         return recipe

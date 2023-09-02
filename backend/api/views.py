@@ -1,4 +1,5 @@
-from django.http import HttpResponse
+import io
+from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
 from reportlab.pdfbase import pdfmetrics
@@ -122,7 +123,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def download_shopping_cart(self, request):
         shopping_list = {}
         ingredients = IngredientAmount.objects.filter(
-            recipe__cart__user=request.user
+            recipe__in_shoppingcarts__user=request.user
         ).values_list(
             'ingredient__name',
             'ingredient__measurement_unit',
@@ -137,26 +138,27 @@ class RecipeViewSet(viewsets.ModelViewSet):
             else:
                 shopping_list[name]['amount'] += amount
         pdfmetrics.registerFont(
-            TTFont('Slimamif', 'Slimamif.ttf', 'UTF-8')
+            TTFont('ArialRegular', 'ArialRegular.ttf', 'UTF-8')
         )
-        response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = ('attachment; '
-                                           'filename="shopping_list.pdf"')
-        page = canvas.Canvas(response)
-        page.setFont('Slimamif', size=22)
+
+        buffer = io.BytesIO()
+        page = canvas.Canvas(buffer)
+        page.setFont('ArialRegular', size=22)
         page.drawString(200, 800, 'Список ингредиентов')
-        page.setFont('Slimamif', size=14)
         height = 750
+        page.setFont('ArialRegular', size=12)
         for i, (name, data) in enumerate(shopping_list.items(), 1):
             page.drawString(
                 75, height, (
-                    f'<{i}> {name} - {data["amount"]}, {data["measurement_unit"]}'
+                    f'{i}) {name.capitalize()} - '
+                    f'{data["amount"]} {data["measurement_unit"]}.'
                 )
             )
             height -= 25
         page.showPage()
         page.save()
-        return response
+        buffer.seek(0)
+        return FileResponse(buffer, as_attachment=True, filename="shopping_list.pdf")
 
     def add_obj(self, model, user, pk):
         if model.objects.filter(user=user, recipe__id=pk).exists():
