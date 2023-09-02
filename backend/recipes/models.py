@@ -1,11 +1,9 @@
 from django.db import models
 
-# Локальный импорт:
 import sys
 from os import path
 __path__ = path.dirname(path.abspath(__file__))
 __parent__ = path.abspath(path.join(__path__, ".."))
-# Добавляем в sys-path именно parent, чтобы не слетала настройка в PyCharm
 sys.path.append(__parent__)
 
 from users.models import User
@@ -83,7 +81,7 @@ class Ingredient(models.Model):
 
 
 class Recipe(models.Model):
-    tag = models.ManyToManyField(
+    tags = models.ManyToManyField(
         verbose_name='Тэг',
         to=Tag,
         related_name='recipes',

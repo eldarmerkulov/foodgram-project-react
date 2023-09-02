@@ -18,7 +18,7 @@ class IngredientInline(admin.TabularInline):
 class RecipeAdmin(admin.ModelAdmin):
     fields = (
         'name',
-        'tag',
+        'tags',
         'author',
         'text',
         'image',
@@ -31,13 +31,13 @@ class RecipeAdmin(admin.ModelAdmin):
         'author',
         'count_favorites',
     )
-    search_fields = ('name', 'author', 'tag',)
-    list_filter = ('name', 'author', 'tag',)
+    search_fields = ('name', 'author', 'tags',)
+    list_filter = ('name', 'author', 'tags',)
     inlines = (IngredientInline,)
     empty_value_display = '-пусто-'
 
     def get_tags(self, recipe):
-        return "\n".join([tag.name for tag in recipe.tag.all()])
+        return "\n".join([tag.name for tag in recipe.tags.all()])
 
     get_tags.short_description = 'Тэги'
 

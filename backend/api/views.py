@@ -9,18 +9,16 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-# Локальный импорт:
 import sys
 from os import path
 __path__ = path.dirname(path.abspath(__file__))
 __parent__ = path.abspath(path.join(__path__, ".."))
-# Добавляем в sys-path именно parent, чтобы не слетала настройка в PyCharm
 sys.path.append(__parent__)
 from recipes.models import Ingredient, IngredientAmount, Favorite,  Recipe, ShoppingCart, Tag
 from users.models import Subscribe, User
 from .paginators import PageLimitPagination
 from .permissions import IsAdminOrAuthorOrReadOnly, IsAdminOrReadOnly
-from .serializers import IngredientSerializer, RecipeSerializer, RecipeSerializerShort, SubscribeSerializer, TagSerializer, UserSerializer
+from .serializers import UserSerializer, IngredientSerializer, RecipeSerializer, RecipeSerializerShort, SubscribeSerializer, TagSerializer
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
@@ -43,65 +41,43 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = (IsAdminOrReadOnly,)
 
 
-class CustomUserViewSet(UserViewSet):
+class UserViewSet(UserViewSet):
+    queryset = User.objects.all()
     pagination_class = PageLimitPagination
+    permission_classes = (IsAuthenticated,)
 
     @action(
         detail=True,
+        methods=['post', 'delete'],
         permission_classes=(IsAuthenticated,)
     )
-    def subscribe(self, request, pk=None):
+    def subscribe(self, request, id):
         user = request.user
-        author = get_object_or_404(User, id=pk)
+        author = get_object_or_404(User, pk=id)
 
-        if user == author:
-            return Response({
-                'errors': 'Вы не можете подписываться на самого себя'
-            }, status=status.HTTP_400_BAD_REQUEST)
-        if Subscribe.objects.filter(user=user, author=author).exists():
-            return Response({
-                'errors': 'Вы уже подписаны на данного пользователя'
-            }, status=status.HTTP_400_BAD_REQUEST)
-
-        follow = Subscribe.objects.create(user=user, author=author)
-        serializer = SubscribeSerializer(
-            follow, context={'request': request}
-        )
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    @subscribe.mapping.delete
-    def del_subscribe(self, request, pk=None):
-        user = request.user
-        author = get_object_or_404(User, id=pk)
-        if user == author:
-            return Response(
-                {
-                    'errors': 'Вы не можете отписываться от самого себя'
-                },
-                status=status.HTTP_400_BAD_REQUEST
+        if request.method == 'POST':
+            serializer = SubscribeSerializer(
+                author, data=request.data, context={'request': request}
             )
-        follow = Subscribe.objects.filter(user=user, author=author)
-        if follow.exists():
-            follow.delete()
+            serializer.is_valid(raise_exception=True)
+            Subscribe.objects.create(user=user, author=author)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        if request.method == 'DELETE':
+            get_object_or_404(
+                Subscribe, user=user, author=author
+            ).delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
-        return Response(
-            {
-                'errors': 'Вы уже отписались'
-            },
-            status=status.HTTP_400_BAD_REQUEST
-        )
-
-    @action(detail=False, permission_classes=[IsAuthenticated])
+    @action(
+        detail=False,
+        permission_classes=(IsAuthenticated,)
+    )
     def subscriptions(self, request):
-        user = request.user
-        queryset = Subscribe.objects.filter(user=user)
-        pages = self.paginate_queryset(queryset)
-        serializer = SubscribeSerializer(
-            pages,
-            many=True,
-            context={'request': request}
+        pages = self.paginate_queryset(
+            User.objects.filter(subscribers__user=self.request.user)
         )
+        serializer = SubscribeSerializer(pages, many=True)
         return self.get_paginated_response(serializer.data)
 
 

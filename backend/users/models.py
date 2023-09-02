@@ -1,12 +1,10 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-# Локальный импорт:
 import sys
 from os import path
 __path__ = path.dirname(path.abspath(__file__))
 __parent__ = path.abspath(path.join(__path__, ".."))
-# Добавляем в sys-path именно parent, чтобы не слетала настройка в PyCharm
 sys.path.append(__parent__)
 from core.constant import (
     ADMIN,
