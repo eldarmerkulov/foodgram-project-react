@@ -20,9 +20,9 @@ from core.constant import (
 )
 
 COLOR_CHOICES = (
-        (BLUE, 'Синий'),
-        (GREEN, 'Зеленый'),
-        (PURPLE, 'Фиолетовый'),
+    (BLUE, 'Синий'),
+    (GREEN, 'Зеленый'),
+    (PURPLE, 'Фиолетовый'),
 )
 
 
@@ -41,7 +41,7 @@ class Tag(models.Model):
         verbose_name='Slug',
         max_length=LENGTH_TAG_SLUG,
         unique=True,
-        )
+    )
 
     class Meta:
         verbose_name = 'Тэг'
