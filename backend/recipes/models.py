@@ -112,7 +112,6 @@ class Recipe(models.Model):
     cooking_time = models.PositiveSmallIntegerField(
         verbose_name='Время приготовления',
         default=1,
-        # валидатор времени
     )
     pub_date = models.DateTimeField(
         verbose_name='Дата публикации',
@@ -204,16 +203,6 @@ class IngredientAmount(models.Model):
     amount = models.PositiveSmallIntegerField(
         verbose_name='Количество',
         default=0,
-        # validators=(
-        #     MinValueValidator(
-        #         Limits.MIN_AMOUNT_INGREDIENTS,
-        #         'Нужно хоть какое-то количество.',
-        #     ),
-        #     MaxValueValidator(
-        #         Limits.MAX_AMOUNT_INGREDIENTS,
-        #         'Слишком много!',
-        #     ),
-        # ),
     )
 
     class Meta:

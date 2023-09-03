@@ -7,7 +7,7 @@ from .models import Subscribe, User
 class UserAdmin(admin.ModelAdmin):
     list_display = ('pk', 'username', 'first_name', 'last_name', 'email', 'role')
     search_fields = ('username',)
-    list_filter = ('role',)
+    list_filter = ('username', 'email')
     empty_value_display = '-пусто-'
     list_editable = ('role',)
 
