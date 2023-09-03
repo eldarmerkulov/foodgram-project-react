@@ -15,11 +15,24 @@ from os import path
 __path__ = path.dirname(path.abspath(__file__))
 __parent__ = path.abspath(path.join(__path__, ".."))
 sys.path.append(__parent__)
-from recipes.models import Ingredient, IngredientAmount, Favorite,  Recipe, ShoppingCart, Tag
+from recipes.models import (
+    Ingredient,
+    IngredientAmount,
+    Favorite,
+    Recipe,
+    ShoppingCart,
+    Tag
+)
 from users.models import Subscribe, User
 from .paginators import PageLimitPagination
 from .permissions import IsAdminOrAuthorOrReadOnly, IsAdminOrReadOnly
-from .serializers import UserSerializer, IngredientSerializer, RecipeSerializer, RecipeSerializerShort, SubscribeSerializer, TagSerializer
+from .serializers import (
+    IngredientSerializer,
+    RecipeSerializer,
+    RecipeSerializerShort,
+    SubscribeSerializer,
+    TagSerializer
+)
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
@@ -158,13 +171,17 @@ class RecipeViewSet(viewsets.ModelViewSet):
         page.showPage()
         page.save()
         buffer.seek(0)
-        return FileResponse(buffer, as_attachment=True, filename="shopping_list.pdf")
+        return FileResponse(
+            buffer,
+            as_attachment=True,
+            filename='shopping_list.pdf'
+        )
 
     def add_obj(self, model, user, pk):
         if model.objects.filter(user=user, recipe__id=pk).exists():
             return Response(
                 {
-                'errors': 'Рецепт уже добавлен'
+                    'errors': 'Рецепт уже добавлен'
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
@@ -185,7 +202,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             )
         return Response(
             {
-            'errors': 'Рецепт уже удален'
+                'errors': 'Рецепт уже удален'
             },
             status=status.HTTP_400_BAD_REQUEST
         )

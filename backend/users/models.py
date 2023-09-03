@@ -11,8 +11,6 @@ from core.constant import (
     LENGTH_EMAIL,
     LENGTH_USER_NAME,
     LENGTH_USER_PASS,
-    MAX_SCORE,
-    MIN_SCORE,
     USER
 )
 from core.validators import validate_username
