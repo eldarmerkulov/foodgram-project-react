@@ -93,7 +93,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           script: |
-            cd foodgram-project-react/infra
+            cd foodgram-project-react
             sudo docker compose -f docker-compose.yml pull
             sudo docker compose -f docker-compose.yml down
             sudo docker compose -f docker-compose.yml up -d
