@@ -1,11 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-import sys
-from os import path
-__path__ = path.dirname(path.abspath(__file__))
-__parent__ = path.abspath(path.join(__path__, ".."))
-sys.path.append(__parent__)
 from core.constant import (
     ADMIN,
     LENGTH_EMAIL,

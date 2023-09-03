@@ -10,20 +10,6 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-import sys
-from os import path
-__path__ = path.dirname(path.abspath(__file__))
-__parent__ = path.abspath(path.join(__path__, ".."))
-sys.path.append(__parent__)
-from recipes.models import (
-    Ingredient,
-    IngredientAmount,
-    Favorite,
-    Recipe,
-    ShoppingCart,
-    Tag
-)
-from users.models import Subscribe, User
 from .paginators import PageLimitPagination
 from .permissions import IsAdminOrAuthorOrReadOnly, IsAdminOrReadOnly
 from .serializers import (
@@ -33,6 +19,15 @@ from .serializers import (
     SubscribeSerializer,
     TagSerializer
 )
+from recipes.models import (
+    Ingredient,
+    IngredientAmount,
+    Favorite,
+    Recipe,
+    ShoppingCart,
+    Tag
+)
+from users.models import Subscribe, User
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):

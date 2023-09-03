@@ -5,11 +5,6 @@ from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers, status
 from rest_framework.validators import UniqueValidator
 
-import sys
-from os import path
-__path__ = path.dirname(path.abspath(__file__))
-__parent__ = path.abspath(path.join(__path__, ".."))
-sys.path.append(__parent__)
 from recipes.models import Ingredient, IngredientAmount, Recipe, Tag
 from users.models import Subscribe, User
 
