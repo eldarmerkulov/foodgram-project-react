@@ -92,6 +92,7 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          command_timeout: 200m
           script: |
             cd foodgram-project-react
             sudo docker compose -f docker-compose.yml pull
