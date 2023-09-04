@@ -16,8 +16,8 @@ services:
     image: praetorian15/foodgram_backend
     env_file: .env
     volumes:
-      - media:/media
-      - static:/backend_static
+      - ./media:/media
+      - ./static:/backend_static
     depends_on:
       - db
 
@@ -25,16 +25,20 @@ services:
     image: praetorian15/foodgram_frontend
     env_file: .env
     volumes:
-      - ../frontend/:/app/result_build/
+      - ./frontend/:/app/result_build/
 
-  infra:
-    image: praetorian15/foodgram_infra
+  nginx:
+    image: nginx:1.19.3
     env_file: .env
     ports:
-      - "8080:80"
+      - 8000:80
     volumes:
-      - media:/media
-      - static:/static
+      - ./infra/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./frontend/build:/usr/share/nginx/html/
+      - ./docs/:/usr/share/nginx/html/api/docs/
+      - ./media:/etc/nginx/html/media/
+      - ./static:/etc/nginx/html/static/
     depends_on:
       - backend
       - frontend
+
