@@ -12,8 +12,8 @@ services:
     image: praetorian15/foodgram_backend
     env_file: ../.env
     volumes:
-      - media_vol:/app/media
-      - static_vol:/app/static
+      - media_vol:/app/media/
+      - static_vol:/app/static/
       - redoc_vol:/app/api/docs/
     depends_on:
       - db
