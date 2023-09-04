@@ -12,9 +12,9 @@ services:
     image: praetorian15/foodgram_backend
     env_file: ../.env
     volumes:
-      - ../media_val:/app/media
-      - ../static_val:/app/static
-      - ../redoc_val:/app/api/docs/
+      - media_vol:/app/media
+      - static_vol:/app/static
+      - redoc_vol:/app/api/docs/
     depends_on:
       - db
     restart: always
@@ -23,7 +23,7 @@ services:
     image: praetorian15/foodgram_frontend
     env_file: ../.env
     volumes:
-      - ../frontend:/app/result_build/
+      - static_vol::/app/result_build/
 
   nginx:
     container_name: foodgram-nginx
@@ -33,17 +33,16 @@ services:
       - 8000:80
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
-      - ../frontend/build:/usr/share/nginx/html/
-      - media_val:/usr/share/nginx/html/media/
-      - redoc_val:/usr/share/nginx/html/api/docs/
-      - static_val:/usr/share/nginx/html/static/
+      - media_vol:/usr/share/nginx/html/media/
+      - redoc_vol:/usr/share/nginx/html/api/docs/
+      - static_vol:/usr/share/nginx/html/static/
     depends_on:
       - backend
       - frontend
     restart: always
 
 volumes:
-  media_val:
+  media_vol:
   pg_data:
-  static_val:
-  redoc_val:
+  static_vol:
+  redoc_vol:
