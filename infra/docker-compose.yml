@@ -23,7 +23,7 @@ services:
     image: praetorian15/foodgram_frontend
     env_file: ../.env
     volumes:
-      - static_vol::/app/result_build/
+      - static_vol:/app/result_build/
 
   nginx:
     container_name: foodgram-nginx
