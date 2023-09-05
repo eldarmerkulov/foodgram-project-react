@@ -1,26 +1,14 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from core.constant import (
-    ADMIN,
-    LENGTH_EMAIL,
-    LENGTH_USER_NAME,
-    LENGTH_USER_PASS,
-    USER
-)
+from core.constant import LENGTH_EMAIL, LENGTH_USER
 from core.validators import validate_username
-
-
-ROLE_CHOICES = (
-    (USER, 'Пользователь'),
-    (ADMIN, 'Администратор'),
-)
 
 
 class User(AbstractUser):
     username = models.CharField(
         verbose_name='Имя пользователя',
-        max_length=LENGTH_USER_NAME,
+        max_length=LENGTH_USER,
         validators=[validate_username],
         unique=True
     )
@@ -31,22 +19,19 @@ class User(AbstractUser):
     )
     first_name = models.CharField(
         verbose_name='Имя',
-        max_length=LENGTH_USER_NAME,
+        max_length=LENGTH_USER,
     )
     last_name = models.CharField(
         verbose_name='Фамилия',
-        max_length=LENGTH_USER_NAME,
-    )
-    role = models.CharField(
-        'Полномочия',
-        max_length=max(len(role_name) for role_name, _ in ROLE_CHOICES),
-        choices=ROLE_CHOICES,
-        default=USER
+        max_length=LENGTH_USER,
     )
     password = models.CharField(
         verbose_name='Пароль',
-        max_length=LENGTH_USER_PASS,
+        max_length=LENGTH_USER,
     )
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ('username', 'first_name', 'last_name')
 
     class Meta(AbstractUser.Meta):
         ordering = ('username',)
@@ -55,12 +40,11 @@ class User(AbstractUser):
 
     @property
     def is_admin(self):
-        return (self.role == ADMIN
-                or self.is_superuser
+        return (self.is_superuser
                 or self.is_staff)
 
     def __str__(self):
-        return f'{self.last_name} {self.first_name}'
+        return self.get_full_name()
 
 
 class Subscribe(models.Model):

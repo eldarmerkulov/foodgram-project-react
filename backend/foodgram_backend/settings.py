@@ -9,7 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-cg6')
 
-DEBUG = eval(os.getenv('DEBUG', 'False'))
+DEBUG = os.getenv('DEBUG', default=False) == 'True'
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost').split(', ')
 
@@ -118,16 +118,12 @@ DJOSER = {
     'LOGIN_FIELD': 'email',
     'HIDE_USERS': False,
     'SERIALIZERS': {
-        'user_create': 'api.serializers.CreateUserSerializer',
         'user': 'api.serializers.UserSerializer',
         'current_user': 'api.serializers.UserSerializer',
-        'user_list': 'api.serializers.UserSerializer',
     },
     'PERMISSIONS': {
-        'user': ('api.permissions.IsAdminOrAuthorOrReadOnly',),
-        'user_list': ('api.permissions.IsAdminOrAuthorOrReadOnly',),
-        'resipe': ('api.permissions.IsAdminOrAuthorOrReadOnly,',),
-        'recipe_list': ('api.permissions.IsAdminOrAuthorOrReadOnly',),
+        'user': ('djoser.permissions.CurrentUserOrAdminOrReadOnly',),
+        'user_list': ('rest_framework.permissions.AllowAny',),
     }
 }
 LANGUAGE_CODE = 'ru-RU'

@@ -4,12 +4,8 @@ from users.models import User
 from core.constant import (
     BLUE,
     GREEN,
-    LENGTH_INGREDIENT_NAME,
-    LENGTH_INGREDIENT_UNIT,
-    LENGTH_RECIPE_NAME,
+    LENGTH_NAME,
     LENGTH_TAG_COLOR,
-    LENGTH_TAG_NAME,
-    LENGTH_TAG_SLUG,
     PURPLE
 )
 
@@ -23,7 +19,7 @@ COLOR_CHOICES = (
 class Tag(models.Model):
     name = models.CharField(
         verbose_name='Наименование',
-        max_length=LENGTH_TAG_NAME,
+        max_length=LENGTH_NAME,
         unique=True,
     )
     color = models.CharField(
@@ -33,7 +29,7 @@ class Tag(models.Model):
     )
     slug = models.SlugField(
         verbose_name='Slug',
-        max_length=LENGTH_TAG_SLUG,
+        max_length=LENGTH_NAME,
         unique=True,
     )
 
@@ -49,11 +45,11 @@ class Tag(models.Model):
 class Ingredient(models.Model):
     name = models.CharField(
         verbose_name='Наименование',
-        max_length=LENGTH_INGREDIENT_NAME,
+        max_length=LENGTH_NAME,
     )
     measurement_unit = models.CharField(
         verbose_name='Единица измерения',
-        max_length=LENGTH_INGREDIENT_UNIT,
+        max_length=LENGTH_NAME,
     )
 
     class Meta:
@@ -94,7 +90,7 @@ class Recipe(models.Model):
     )
     name = models.CharField(
         verbose_name='Наименование',
-        max_length=LENGTH_RECIPE_NAME,
+        max_length=LENGTH_NAME,
     )
     image = models.ImageField(
         verbose_name='Изображение',
