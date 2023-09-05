@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.utils.safestring import mark_safe
+
 from .models import (
     Ingredient,
     IngredientAmount,
@@ -11,7 +13,8 @@ from .models import (
 
 class IngredientInline(admin.TabularInline):
     model = IngredientAmount
-    extra = 1
+    extra = 0
+    min_num = 1
 
 
 @admin.register(Recipe)
@@ -30,21 +33,28 @@ class RecipeAdmin(admin.ModelAdmin):
         'get_tags',
         'author',
         'count_favorites',
+        'get_image',
+    )
+    list_display_links = (
+        'name',
+        'author',
     )
     search_fields = ('name', 'author', 'tags',)
     list_filter = ('name', 'author', 'tags',)
     inlines = (IngredientInline,)
     empty_value_display = '-пусто-'
 
+    @admin.display(description='Тэги')
     def get_tags(self, recipe):
-        return "\n".join([tag.name for tag in recipe.tags.all()])
+        return ', '.join([tag.name for tag in recipe.tags.all()])
 
-    get_tags.short_description = 'Тэги'
-
+    @admin.display(description='В избранном')
     def count_favorites(self, recipe):
-        return recipe.in_favorites.count()
+        return recipe.favorites.count()
 
-    count_favorites.short_description = 'В избранном'
+    @admin.display(description='Изображение')
+    def get_image(self, obj):
+        return mark_safe(f'<img src={obj.image.url} width="60" hieght="40"')
 
 
 @admin.register(Favorite)
@@ -72,7 +82,3 @@ class IngredientAdmin(admin.ModelAdmin):
 @admin.register(ShoppingCart)
 class ShoppingCartAdmin(admin.ModelAdmin):
     list_display = ('pk', 'user', 'recipe',)
-    # search_fields = ('username',)
-    # empty_value_display = '-пусто-'
-    # list_filter = ('role',)
-    # list_editable = ('role',)

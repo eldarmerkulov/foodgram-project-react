@@ -1,25 +1,40 @@
-from django.contrib import admin
+from django.contrib.admin import (
+    display,
+    ModelAdmin as BaseModelAdmin,
+    register
+)
+from django.contrib.auth.admin import (
+    UserAdmin as BaseUserAdmin
+)
 
 from .models import Subscribe, User
 
 
-@admin.register(User)
-class UserAdmin(admin.ModelAdmin):
+@register(User)
+class UserAdmin(BaseUserAdmin):
     list_display = (
         'pk',
         'username',
         'first_name',
         'last_name',
         'email',
-        'role'
+        'count_recipes',
+        'count_followers'
     )
     search_fields = ('username',)
     list_filter = ('username', 'email')
     empty_value_display = '-пусто-'
-    list_editable = ('role',)
+
+    @display(description='Рецептов')
+    def count_recipes(self, user):
+        return user.recipes.count()
+
+    @display(description='Подписчиков')
+    def count_followers(self, user):
+        return user.subscribers.count()
 
 
-@admin.register(Subscribe)
-class SubscribeAdmin(admin.ModelAdmin):
+@register(Subscribe)
+class SubscribeAdmin(BaseModelAdmin):
     list_display = ('pk', 'author', 'user')
     search_fields = ('user',)
