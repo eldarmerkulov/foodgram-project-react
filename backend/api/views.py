@@ -1,6 +1,6 @@
 import io
 
-from django.db.models import Q, Sum
+from django.db.models import Sum
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet as BaseUserViewSet
@@ -32,9 +32,7 @@ from .serializers import (
 from recipes.models import (
     Ingredient,
     IngredientAmount,
-    Favorite,
     Recipe,
-    ShoppingCart,
     Tag
 )
 from users.models import Subscribe, User

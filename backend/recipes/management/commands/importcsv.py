@@ -23,16 +23,21 @@ class Command(BaseCommand):
                         encoding='utf-8'
                 ) as csv_file:
                     data = csv.DictReader(csv_file)
-                    model.objects.bulk_create(
-                        [model(**row) for row in data],
-                        ignore_conflicts=True,
+                    count = sum(
+                        [
+                            item for _, item in [
+                                model.objects.get_or_create(
+                                    **row
+                                ) for row in data
+                            ]
+                        ]
                     )
+
                 self.stdout.write(
                     self.style.SUCCESS(
                         'Successfully import csv'
-                        ' files into database: {}'.format(
-                            model.__name__,
-                        )
+                        ' files into database: '
+                        f'{model.__name__} - {count} row added.'
                     )
                 )
             except FileNotFoundError:
