@@ -6,7 +6,6 @@ services:
     env_file: ../.env
     volumes:
       - pg_data:/var/lib/postgresql/data
-    restart: always
 
   backend:
     image: praetorian15/foodgram_backend
@@ -16,7 +15,6 @@ services:
       - static_vol:/static/
     depends_on:
       - db
-    restart: always
 
   frontend:
     image: praetorian15/foodgram_frontend
@@ -39,7 +37,6 @@ services:
     depends_on:
       - backend
       - frontend
-    restart: always
 
 volumes:
   media_vol:
