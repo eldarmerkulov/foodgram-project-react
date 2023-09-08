@@ -247,6 +247,16 @@ class RecipePostSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({
                 'ingredients': 'Должен быть хотя бы один тэг'
             })
+        tags_check = [
+            get_object_or_404(
+                Tag,
+                id=tag['id']
+            ) for tag in tags
+        ]
+        if len(tags_check) > len(set(tags_check)):
+            raise serializers.ValidationError(
+                'Теги должны быть уникальными'
+            )
         ingredients = data.get('ingredients')
         if not ingredients:
             raise serializers.ValidationError({
