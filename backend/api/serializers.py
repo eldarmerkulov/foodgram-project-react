@@ -156,7 +156,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         )
 
 
-class RecipeGetSerializer(RecipeSerializer):
+class RecipeGetSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
     tags = TagSerializer(many=True, read_only=True)
     ingredients = serializers.SerializerMethodField()
@@ -174,7 +174,8 @@ class RecipeGetSerializer(RecipeSerializer):
         ),
     )
 
-    class Meta(RecipeSerializer.Meta):
+    class Meta:
+        model = Recipe
         fields = (
             'id',
             'tags',
@@ -212,7 +213,7 @@ class RecipeGetSerializer(RecipeSerializer):
         )
 
 
-class RecipePostSerializer(RecipeSerializer):
+class RecipePostSerializer(serializers.ModelSerializer):
     tags = serializers.PrimaryKeyRelatedField(
         read_only=True,
         many=True
@@ -226,8 +227,11 @@ class RecipePostSerializer(RecipeSerializer):
         min_value=MIN_SCORE,
         max_value=MAX_SCORE
     )
+    name = serializers.CharField(required=False)
+    text = serializers.CharField(required=False)
 
-    class Meta(RecipeSerializer.Meta):
+    class Meta:
+        model = Recipe
         fields = (
             'ingredients',
             'tags',
