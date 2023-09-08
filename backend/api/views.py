@@ -32,7 +32,9 @@ from .serializers import (
 from recipes.models import (
     Ingredient,
     IngredientAmount,
+    Favorite,
     Recipe,
+    ShoppingCart,
     Tag
 )
 from users.models import Subscribe, User
@@ -60,18 +62,19 @@ class UserViewSet(BaseUserViewSet):
         methods=['post'],
         permission_classes=(IsAuthenticated,),
     )
+
     def subscribe(self, request, id):
         author = get_object_or_404(User, pk=id)
         serializer = SubscribeCreateSerializer(
             author,
-            data=request.data,
+            data={
+                'user': request.user.id,
+                'author': id
+            },
             context={'request': request}
         )
         serializer.is_valid(raise_exception=True)
-        Subscribe.objects.create(
-            user=request.user,
-            author=author
-        )
+        serializer.save()
         return Response(
             serializer.data,
             status=status.HTTP_201_CREATED
@@ -97,7 +100,8 @@ class UserViewSet(BaseUserViewSet):
         serializer = SubscribeSerializer(
             queryset,
             many=True,
-            context={'request': request})
+            context={'request': request}
+        )
         return self.get_paginated_response(serializer.data)
 
 
@@ -125,7 +129,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @favorite.mapping.delete
     def delete_favorite(self, request, pk):
-        return self.delete_obj(FavoriteSerializer, request, pk)
+        return self.delete_obj(Favorite, request, pk)
 
     @action(
         detail=True,
@@ -137,7 +141,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @shopping_cart.mapping.delete
     def delete_shopping_cart(self, request, pk):
-        return self.delete_obj(ShoppingCartSerializer, request, pk)
+        return self.delete_obj(ShoppingCart, request, pk)
 
     @action(
         detail=False,
@@ -198,8 +202,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         )
 
     @staticmethod
-    def delete_obj(serializer_class, request, pk):
-        obj = serializer_class.Meta.model.objects.filter(
+    def delete_obj(model, request, pk):
+        obj = model.objects.filter(
             user=request.user,
             recipe=get_object_or_404(Recipe, pk=pk)
         )

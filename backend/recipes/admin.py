@@ -33,6 +33,7 @@ class RecipeAdmin(admin.ModelAdmin):
         'get_tags',
         'author',
         'count_favorites',
+        'get_ingredients',
         'get_image',
     )
     list_display_links = (
@@ -47,6 +48,14 @@ class RecipeAdmin(admin.ModelAdmin):
     @admin.display(description='Тэги')
     def get_tags(self, recipe):
         return ', '.join([tag.name for tag in recipe.tags.all()])
+
+    @admin.display(description='Ингредиенты')
+    def get_ingredients(self, recipe):
+        return ', '.join(
+            [
+                ingredient.name for ingredient in recipe.ingredients.all()
+            ]
+        )
 
     @admin.display(description='В избранном')
     def count_favorites(self, recipe):
