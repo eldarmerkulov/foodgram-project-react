@@ -28,7 +28,7 @@
     git clone git@github.com:eldarmerkulov/foodgram-project-react.git
     ```
 
-2. Создайте .env файл в корневой директории проекта, в котором должны содержаться следующие переменные для подключения к базе PostgreSQL:
+2. Создайте .env файл в корневой директории проекта, в котором должны содержаться следующие переменные:
 
     ```
     POSTGRES_USER=user
@@ -44,7 +44,7 @@
 
 3. Перейдите в директорию infra/ и выполните команду для создания и запуска контейнеров.
     ```
-    sudo docker compose up -d --build
+    sudo docker compose -f docker-compose.local.yml up -d --build
     ```
 
 > В Windows команда выполняется без **sudo**
