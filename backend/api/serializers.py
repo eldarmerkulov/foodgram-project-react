@@ -46,8 +46,8 @@ class UserSerializer(serializers.ModelSerializer):
     def get_is_subscribed(self, obj):
         user = self.context.get('request').user
         return (
-                user.is_authenticated
-                and user.authors.filter(author=obj).exists()
+            user.is_authenticated
+            and user.authors.filter(author=obj).exists()
         )
 
 
@@ -132,7 +132,7 @@ class IngredientAmountSerializer(serializers.ModelSerializer):
         min_value=(
             MIN_SCORE,
             f'Количество не более {MIN_SCORE}'
-            ),
+        ),
         max_value=(
             MAX_SCORE,
             f'Количество не более {MAX_SCORE}'
@@ -200,15 +200,15 @@ class RecipeGetSerializer(RecipeSerializer):
     def get_is_favorite(self, recipe):
         user = self.context.get('request').user
         return (
-                user.is_authenticated
-                and user.favorites.filter(recipe=recipe).exists()
+            user.is_authenticated
+            and user.favorites.filter(recipe=recipe).exists()
         )
 
     def get_is_in_shopping_cart(self, recipe):
         user = self.context.get('request').user
         return (
-                user.is_authenticated
-                and user.shoppingcarts.filter(recipe=recipe).exists()
+            user.is_authenticated
+            and user.shoppingcarts.filter(recipe=recipe).exists()
         )
 
 

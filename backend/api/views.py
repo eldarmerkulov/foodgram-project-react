@@ -62,7 +62,6 @@ class UserViewSet(BaseUserViewSet):
         methods=['post'],
         permission_classes=(IsAuthenticated,),
     )
-
     def subscribe(self, request, id):
         author = get_object_or_404(User, pk=id)
         serializer = SubscribeCreateSerializer(
