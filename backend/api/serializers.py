@@ -242,32 +242,32 @@ class RecipePostSerializer(serializers.ModelSerializer):
         )
 
     def validate(self, data):
-        CHECK_PARAMS = (
-            ('ingredients', 'ингредиент'),
-            ('tags', 'тэг')
-        )
-        for param, name in CHECK_PARAMS:
-            obj = self.data.get(param)
-            if not obj:
-                raise serializers.ValidationError(
-                    {
-                        f'Должен быть хотя бы один {name}'
-                    }
-                )
-            obj_len_check = [
-                element['id'] for element in obj
-            ]
-            if len(obj_len_check) > len(set(obj_len_check)):
-                raise serializers.ValidationError(
-                    f'{name} должен быть уникальным'
-                )
-        image = self.data.get('image')
-        if not image:
+        tags = data.get('tags')
+        if not tags:
+            raise serializers.ValidationError({
+                'ingredients': 'Должен быть хотя бы один тэг'
+            })
+        ingredients = data.get('ingredients')
+        if not ingredients:
+            raise serializers.ValidationError({
+                'ingredients': 'Должен быть хотя бы один ингредиент'
+            })
+        ingredients_check = [
+            get_object_or_404(
+                Ingredient,
+                id=ingredient['id']
+            ) for ingredient in ingredients
+        ]
+
+        if len(ingredients_check) > len(set(ingredients_check)):
             raise serializers.ValidationError(
-                {
-                    'Добавьте изображение'
-                }
+                'Ингредиенты должны быть уникальными'
             )
+        image = data.get('image')
+        if not image:
+            raise serializers.ValidationError({
+                'ingredients': 'Добавьте изображение'
+            })
         return data
 
     @staticmethod
