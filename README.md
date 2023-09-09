@@ -65,7 +65,7 @@
 
 6. Готово! Ниже представлены доступные адреса проекта:
     -  http://localhost/ - главная страница сайта;
-    -  http://localhost/admin/ - админ панель; (Логин: admin@gmail.com, Пароль: admin)
+    -  http://localhost/admin/ - админ панель;
     -  http://localhost/api/ - API проекта
     -  http://localhost/api/docs/redoc.html - документация к API
 
