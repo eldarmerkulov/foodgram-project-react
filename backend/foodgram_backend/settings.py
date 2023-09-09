@@ -19,6 +19,7 @@ EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
 AUTH_USER_MODEL = 'users.User'
 
 INSTALLED_APPS = [
+    'colorfield',
     'core.apps.CoreConfig',
     'django.contrib.admin',
     'django.contrib.auth',
