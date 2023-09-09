@@ -217,18 +217,3 @@ class RecipeViewSet(viewsets.ModelViewSet):
             },
             status=status.HTTP_400_BAD_REQUEST
         )
-
-    @action(
-        detail=False,
-        permission_classes=(IsAuthenticated,)
-    )
-    def favorites(self, request):
-        queryset = self.paginate_queryset(
-            Recipe.objects.filter(favorites__user=request.user)
-        )
-        serializer = RecipeGetSerializer(
-            queryset,
-            many=True,
-            context={'request': request}
-        )
-        return self.get_paginated_response(serializer.data)
