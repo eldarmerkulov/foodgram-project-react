@@ -105,7 +105,7 @@ class SubscribeCreateSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         return SubscribeSerializer(
-            instance,
+            instance.author,
             context=self.context
         ).data
 

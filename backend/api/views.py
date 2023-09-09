@@ -63,9 +63,7 @@ class UserViewSet(BaseUserViewSet):
         permission_classes=(IsAuthenticated,),
     )
     def subscribe(self, request, id):
-        author = get_object_or_404(User, pk=id)
         serializer = SubscribeCreateSerializer(
-            author,
             data={
                 'user': request.user.id,
                 'author': id
