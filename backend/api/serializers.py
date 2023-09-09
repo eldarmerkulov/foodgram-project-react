@@ -116,10 +116,9 @@ class SubscribeCreateSerializer(serializers.ModelSerializer):
         return data
 
     def to_representation(self, instance):
-        context = self.context
         return SubscribeSerializer(
             instance,
-            context=context
+            context=self.context
         ).data
 
 
@@ -333,10 +332,9 @@ class ShoppingCartFavoriteSerializer(serializers.ModelSerializer):
         return data
 
     def to_representation(self, instance):
-        context = {'request': self.context.get('request')}
         return RecipeSerializer(
             instance.recipe,
-            context=context
+            context=self.context
         ).data
 
 
