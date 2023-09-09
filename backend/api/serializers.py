@@ -214,7 +214,7 @@ class RecipePostSerializer(serializers.ModelSerializer):
         tags = data.get('tags')
         if not tags:
             raise serializers.ValidationError({
-                'ingredients': 'Должен быть хотя бы один тэг'
+                'Должен быть хотя бы один тэг'
             })
         if len(tags) > len(set(tags)):
             raise serializers.ValidationError(
@@ -223,7 +223,7 @@ class RecipePostSerializer(serializers.ModelSerializer):
         ingredients = data.get('ingredients')
         if not ingredients:
             raise serializers.ValidationError({
-                'ingredients': 'Должен быть хотя бы один ингредиент'
+                'Должен быть хотя бы один ингредиент'
             })
         ingredients_check = [
             ingredient['id'] for ingredient in ingredients
@@ -236,7 +236,7 @@ class RecipePostSerializer(serializers.ModelSerializer):
         image = data.get('image')
         if not image:
             raise serializers.ValidationError({
-                'ingredients': 'Добавьте изображение'
+                'Добавьте изображение'
             })
         return data
 
