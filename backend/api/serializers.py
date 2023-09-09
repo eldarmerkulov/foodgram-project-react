@@ -1,5 +1,4 @@
 from django.db import models
-from django.shortcuts import get_object_or_404
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers, status
 
@@ -84,26 +83,15 @@ class SubscribeSerializer(UserSerializer):
 
 
 class SubscribeCreateSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(
-        read_only=True,
-        many=True
-    )
-    author = serializers.PrimaryKeyRelatedField(
-        read_only=True,
-        many=True
-    )
 
     class Meta:
         fields = '__all__'
         model = Subscribe
 
     def validate(self, data):
-        author_id = self.context.get(
-            'request'
-        ).parser_context.get('kwargs').get('id')
-        author = get_object_or_404(User, id=author_id)
-        user = self.context.get('request').user
-        if user.authors.filter(author=author_id).exists():
+        author = data.get('author')
+        user = data.get('user')
+        if user.authors.filter(author=author).exists():
             raise serializers.ValidationError(
                 detail='Подписка уже существует',
                 code=status.HTTP_400_BAD_REQUEST,
@@ -128,14 +116,8 @@ class IngredientAmountSerializer(serializers.ModelSerializer):
         many=True
     )
     amount = serializers.IntegerField(
-        min_value=(
-            MIN_SCORE,
-            f'Количество не более {MIN_SCORE}'
-        ),
-        max_value=(
-            MAX_SCORE,
-            f'Количество не более {MAX_SCORE}'
-        ),
+        min_value=MIN_SCORE,
+        max_value=MAX_SCORE,
     )
 
     class Meta:
@@ -162,16 +144,6 @@ class RecipeGetSerializer(serializers.ModelSerializer):
     is_favorite = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
     image = Base64ImageField()
-    cooking_time = serializers.IntegerField(
-        min_value=(
-            MIN_SCORE,
-            f'Количество не более {MIN_SCORE}'
-        ),
-        max_value=(
-            MAX_SCORE,
-            f'Количество не более {MAX_SCORE}'
-        ),
-    )
 
     class Meta:
         model = Recipe
@@ -226,8 +198,6 @@ class RecipePostSerializer(serializers.ModelSerializer):
         min_value=MIN_SCORE,
         max_value=MAX_SCORE
     )
-    name = serializers.CharField(required=False)
-    text = serializers.CharField(required=False)
 
     class Meta:
         model = Recipe
@@ -246,13 +216,7 @@ class RecipePostSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({
                 'ingredients': 'Должен быть хотя бы один тэг'
             })
-        tags_check = [
-            get_object_or_404(
-                Tag,
-                id=tag['id']
-            ) for tag in tags
-        ]
-        if len(tags_check) > len(set(tags_check)):
+        if len(tags) > len(set(tags)):
             raise serializers.ValidationError(
                 'Теги должны быть уникальными'
             )
@@ -262,10 +226,7 @@ class RecipePostSerializer(serializers.ModelSerializer):
                 'ingredients': 'Должен быть хотя бы один ингредиент'
             })
         ingredients_check = [
-            get_object_or_404(
-                Ingredient,
-                id=ingredient['id']
-            ) for ingredient in ingredients
+            ingredient['id'] for ingredient in ingredients
         ]
 
         if len(ingredients_check) > len(set(ingredients_check)):
