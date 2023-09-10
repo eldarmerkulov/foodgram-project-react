@@ -112,7 +112,7 @@ class SubscribeCreateSerializer(serializers.ModelSerializer):
 
 class IngredientAmountSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(
-        read_only=True,
+        queryset=Ingredient.objects.all(),
         many=True
     )
     amount = serializers.IntegerField(
