@@ -1,5 +1,6 @@
 ![workflow](https://github.com/eldarmerkulov/foodgram-project-react/actions/workflows/main.yml/badge.svg)
 
+https://foodgram2023.ddns.net/
 
 ## Стек технологий
 

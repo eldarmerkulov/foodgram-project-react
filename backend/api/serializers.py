@@ -186,11 +186,10 @@ class RecipeGetSerializer(serializers.ModelSerializer):
 
 class RecipePostSerializer(serializers.ModelSerializer):
     tags = serializers.PrimaryKeyRelatedField(
-        read_only=True,
+        queryset=Tag.objects.all(),
         many=True
     )
     ingredients = IngredientAmountSerializer(
-        read_only=True,
         many=True
     )
     image = Base64ImageField()
