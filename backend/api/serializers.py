@@ -113,7 +113,6 @@ class SubscribeCreateSerializer(serializers.ModelSerializer):
 class IngredientAmountSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(
         queryset=Ingredient.objects.all(),
-        many=True
     )
     amount = serializers.IntegerField(
         min_value=MIN_SCORE,
