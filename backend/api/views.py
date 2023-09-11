@@ -27,7 +27,8 @@ from .serializers import (
     ShoppingCartSerializer,
     SubscribeCreateSerializer,
     SubscribeSerializer,
-    TagSerializer
+    TagSerializer,
+    UserSerializer
 )
 from recipes.models import (
     Ingredient,
@@ -54,6 +55,7 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
 
 class UserViewSet(BaseUserViewSet):
     queryset = User.objects.all()
+    serializer_class = UserSerializer
     pagination_class = PageLimitPagination
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
