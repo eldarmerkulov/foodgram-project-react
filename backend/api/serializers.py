@@ -232,12 +232,14 @@ class RecipePostSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({
                 'ingredients': 'Ингредиенты должны быть уникальными'
             })
-        image = data.get('image')
-        if not image:
+        return data
+
+    def validate_image(self, value):
+        if not value:
             raise serializers.ValidationError({
                 'image': 'Добавьте изображение'
             })
-        return data
+        return value
 
     @staticmethod
     def create_recipe_ingredients(recipe, ingredients):
@@ -261,11 +263,11 @@ class RecipePostSerializer(serializers.ModelSerializer):
         return recipe
 
     def update(self, recipe, validated_data):
+        recipe.tags.clear()
+        recipe.ingredients.clear()
         ingredients = validated_data.pop('ingredients')
         tags = validated_data.pop('tags')
-        recipe.tags.clear()
         recipe.tags.set(tags)
-        recipe.ingredients.clear()
         self.create_recipe_ingredients(recipe=recipe, ingredients=ingredients)
         return super().update(recipe, validated_data)
 
