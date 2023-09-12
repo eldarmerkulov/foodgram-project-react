@@ -28,7 +28,6 @@ from .serializers import (
     SubscribeCreateSerializer,
     SubscribeSerializer,
     TagSerializer,
-    UserSerializer
 )
 from recipes.models import (
     Ingredient,
