@@ -55,7 +55,7 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
 
 class UserViewSet(BaseUserViewSet):
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = SubscribeSerializer
     pagination_class = PageLimitPagination
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
